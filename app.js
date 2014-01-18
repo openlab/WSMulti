@@ -25,6 +25,7 @@ var wtf = [];
 wsSrc.on('message', function(data, flags) {
   var message = new Buffer(data).toString('base64');
   wtf.push(message);
+  console.log("Now with: " + wtf.length);
 });
 
 var allSocks = [];
@@ -38,7 +39,7 @@ var loop = setInterval(function() {
   var one = wtf.pop();
   if (typeof one == 'string') {
     for(var i = allSocks.length - 1; i >= 0; i--) {
-      if(allSocks[i].readyState == 'WebSocket.OPEN') {
+      if(allSocks[i].readyState == 1) {
         allSocks[i].send(new Buffer(one, "base64"));
       }
     }
