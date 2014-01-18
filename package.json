@@ -9,5 +9,7 @@
   },
   "dependencies": {
 	"ws": "*",
+	"express": "*",
+	"azure": "*",
   }
 }

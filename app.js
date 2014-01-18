@@ -1,4 +1,5 @@
 var config = require('./config');
+var azure = require('azure');
 var util = require('util');
 var WebSocket = require('ws');
 var WebSocketServer = require('ws').Server;
