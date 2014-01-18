@@ -12,7 +12,7 @@
 				{
 					/* Initialize stations */
 					stations = new StationMgr( 'CanvasDiv' );
-					var url = 'ws://us-wwcsi-01.cloudapp.net:9999';
+					var url = 'ws://' + window.location.host;
 					var Socket = new WebSocket( url );
 					Socket.binaryType = "arraybuffer";
 
