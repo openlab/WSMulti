@@ -1,6 +1,6 @@
 {
   "name": "WSMulti",
-  "version": "0.1",
+  "version": "0.0.1",
   "description": "A nodejs application to multiplex a binary WebSocket using base64 arrays",
   "main": "app.js",
   "author": {
@@ -10,6 +10,6 @@
   "dependencies": {
 	"ws": "*",
 	"express": "*",
-	"azure": "*",
+	"azure": "*"
   }
 }
