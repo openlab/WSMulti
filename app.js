@@ -6,6 +6,8 @@ var WebSocketServer = require('ws').Server;
 var http = require('http');
 var express = require('express');
 
+
+
 var app = express();
 app.use(express.static(__dirname + '/public'));
 
@@ -25,7 +27,7 @@ wsSrc.on('open', function() {
 wsSrc.on('message', function(data, flags) {
   var message = new Buffer(data).toString('base64');
   msg.push(message);
-  //console.log("Messages: " + msg.length);
+  console.log("message received. Msg length: " + msg.length);
 });
 
 wsSrc.on('close', function(ws) {
@@ -56,6 +58,7 @@ var loop = setInterval(function() {
     for(var i = allSocks.length - 1; i >= 0; i--) {
       if(allSocks[i].readyState == 1) {
         allSocks[i].send(new Buffer(one, "base64"));
+        console.log('message sent');
       }
     }
   }
