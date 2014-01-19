@@ -28,15 +28,19 @@ wsSrc.on('message', function(data, flags) {
   console.log("Messages: " + msg.length);
 });
 
+wsSrc.on('close', function(ws) {
+    console.log('Disconnected from: ' + config.sourceSocket);
+});
+
 var allSocks = [];
 
 wsDst.on('connection', function(ws) {
-  console.log("Connected: " + ws.id);
+  console.log("Client Connected: " + ws.id);
   allSocks.push(ws);
 });
 
-ws.on('close', function(ws) {
-    console.log('Disconnected:' + ws.id);
+wsDst.on('close', function(ws) {
+    console.log('Client Disconnected:' + ws.id);
 });
 
 var loop = setInterval(function() {
