@@ -24,7 +24,7 @@ function wsStart(){
         wsSrc.on('message', function(data, flags) {
           var message = new Buffer(data).toString('base64');
           msg.push(message);
-          // console.log("Messages: " + msg.length);
+          console.log("Messages: " + msg.length);
         });
 
         wsSrc.on('close', function(ws) {
@@ -60,14 +60,14 @@ function wsStart(){
 
     });
 
-    wsSrc.on('error', function(error) { console.log(error); setTimeout(wsStart(), 5000); });
+    //wsSrc.on('error', function(error) { console.log(error); setTimeout(wsStart(), 5000); });
 }
 
 wsStart();
 
-process.on('uncaughtException', function(err) {
+/*process.on('uncaughtException', function(err) {
   // try to reconnect
   if(err.code == 'ECONNREFUSED'){
     setTimeout(wsStart(), 5000);
   }
-});
+});*/
