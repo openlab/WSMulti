@@ -24,7 +24,7 @@ function wsStart(){
         wsSrc.on('message', function(data, flags) {
           var message = new Buffer(data).toString('base64');
           msg.push(message);
-          console.log("Messages: " + msg.length);
+          //console.log("Messages: " + msg.length);
         });
 
         wsSrc.on('close', function(ws) {
