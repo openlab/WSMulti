@@ -66,6 +66,8 @@ function wsStart(){
 wsStart();
 
 process.on('uncaughtException', function(err) {
-    // try to reconnect
+  // try to reconnect
+  if(err.code == 'ECONNREFUSED'){
     setTimeout(wsStart(), 5000);
+  }
 });
