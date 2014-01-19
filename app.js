@@ -19,57 +19,67 @@ var msg = [];
 var allSocks = [];
 var connectionIDCounter = 0;
 
-var wsSrc = new WebSocket(config.sourceSocket);
-wsSrc.on('open', function() {
-    console.log('Connected to: ' + config.sourceSocket);
-});
+function wsStart(){
 
-wsSrc.on('message', function(data, flags) {
-  var message = new Buffer(data).toString('base64');
-  msg.push(message);
-  console.log("message received. Msg length: " + msg.length);
-});
-
-wsSrc.on('close', function(ws) {
-    console.log('Disconnected from: ' + config.sourceSocket);
-
-    // try to reconnect
-    //setTimeout(wsStart(), 5000);
-});
-
-var wsDst = new WebSocketServer({server: server});
-
-wsDst.on('connection', function(ws) {
-  //allSocks.push(ws);
-  allSocks[connectionIDCounter++] = ws;
-  console.log("Client ID:" + connectionIDCounter + " connected IP: " + ws._socket.remoteAddress + ":" + ws._socket.remotePort);
-
-  ws.on('close', function() {
-    console.log('Client Disconnected');
+  var wsSrc = new WebSocket(config.sourceSocket);
+  wsSrc.on('open', function() {
+      console.log('Connected to: ' + config.sourceSocket);
   });
 
-});
+  wsSrc.on('message', function(data, flags) {
+    var message = new Buffer(data).toString('base64');
+    msg.push(message);
+    //console.log("message received. Msg length: " + msg.length);
+  });
 
-wsDst.on('error', function(error) { console.log(error); });
+  wsSrc.on('close', function(ws) {
+      console.log('Disconnected from: ' + config.sourceSocket);
 
-var loop = setInterval(function() {
-  var one = msg.pop();
-  if (typeof one == 'string') {
-    for(var i = allSocks.length - 1; i >= 0; i--) {
-      if(allSocks[i].readyState == 1) {
-        allSocks[i].send(new Buffer(one, "base64"));
-        console.log('message sent');
+      // try to reconnect
+      setTimeout(wsStart(), 5000);
+  });
+
+  var wsDst = new WebSocketServer({server: server});
+
+  wsDst.on('connection', function(ws) {
+    allSocks.push(ws);
+    //ws.id = connectionIDCounter ++;
+    //allSocks[ws.id] = ws;
+    console.log("Client ID: " + ws.id + " connected IP: " + ws._socket.remoteAddress + ":" + ws._socket.remotePort);
+    console.log('Total Clients: ' + allSocks.length);
+
+    ws.on('close', function() {
+      console.log('Client ' + ws.id + ' Disconnected');
+      //allSocks.splice(ws.id,1);
+      //delete allSocks[ws.id];
+      console.log('Total Clients: ' + allSocks.length);
+    });
+
+  });
+
+  wsDst.on('error', function(error) { console.log(error); });
+
+  var loop = setInterval(function() {
+    var one = msg.pop();
+    if (typeof one == 'string') {
+      for(var i = allSocks.length - 1; i >= 0; i--) {
+        if(allSocks[i].readyState == 1) {
+          allSocks[i].send(new Buffer(one, "base64"));
+          //console.log('message sent');
+        }
       }
     }
-  }
-}, 50);
+  }, 50);
 
-wsSrc.on('error', function(error) { console.log(error); /*setTimeout(wsStart(), 5000);*/ });
+  wsSrc.on('error', function(error) { console.log(error); setTimeout(wsStart(), 5000); });
 
+}
 
-/*process.on('uncaughtException', function(err) {
+wsStart();
+
+process.on('uncaughtException', function(err) {
   // try to reconnect
   if(err.code == 'ECONNREFUSED'){
     setTimeout(wsStart(), 5000);
   }
-});*/
+});
