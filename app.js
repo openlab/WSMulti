@@ -23,7 +23,7 @@ function wsStart(){
 
   var wsSrc = new WebSocket(config.sourceSocket);
   wsSrc.on('open', function() {
-      console.log('Connected to: ' + config.sourceSocket);
+      console.log(new Date() + ' ' + 'Connected to: ' + config.sourceSocket);
   });
 
   wsSrc.on('message', function(data, flags) {
@@ -33,47 +33,46 @@ function wsStart(){
   });
 
   wsSrc.on('close', function(ws) {
-      console.log('Disconnected from: ' + config.sourceSocket);
+      console.log(new Date() + ' ' + 'Disconnected from: ' + config.sourceSocket);
 
       // try to reconnect
       setTimeout(wsStart(), 5000);
   });
 
-  var wsDst = new WebSocketServer({server: server});
+  wsSrc.on('error', function(error) { console.log(error); setTimeout(wsStart(), 5000); });
+}
 
-  wsDst.on('connection', function(ws) {
-    allSocks.push(ws);
-    //ws.id = connectionIDCounter ++;
-    //allSocks[ws.id] = ws;
-    console.log("Client ID: " + ws.id + " connected IP: " + ws._socket.remoteAddress + ":" + ws._socket.remotePort);
+var wsDst = new WebSocketServer({server: server});
+
+wsDst.on('connection', function(ws) {
+  allSocks.push(ws);
+  //ws.id = connectionIDCounter ++;
+  //allSocks[ws.id] = ws;
+  console.log(new Date() + " " + "Client ID: " + ws.id + " connected IP: " + ws._socket.remoteAddress + ":" + ws._socket.remotePort);
+  console.log('Total Clients: ' + allSocks.length);
+
+  ws.on('close', function() {
+    console.log(new Date() + ' ' + 'Client ' + ws.id + ' Disconnected');
+    //allSocks.splice(ws.id,1);
+    //delete allSocks[ws.id];
     console.log('Total Clients: ' + allSocks.length);
-
-    ws.on('close', function() {
-      console.log('Client ' + ws.id + ' Disconnected');
-      //allSocks.splice(ws.id,1);
-      //delete allSocks[ws.id];
-      console.log('Total Clients: ' + allSocks.length);
-    });
-
   });
 
-  wsDst.on('error', function(error) { console.log(error); });
+});
 
-  var loop = setInterval(function() {
-    var one = msg.pop();
-    if (typeof one == 'string') {
-      for(var i = allSocks.length - 1; i >= 0; i--) {
-        if(allSocks[i].readyState == 1) {
-          allSocks[i].send(new Buffer(one, "base64"));
-          //console.log('message sent');
-        }
+wsDst.on('error', function(error) { console.log(error); });
+
+var loop = setInterval(function() {
+  var one = msg.pop();
+  if (typeof one == 'string') {
+    for(var i = allSocks.length - 1; i >= 0; i--) {
+      if(allSocks[i].readyState == 1) {
+        allSocks[i].send(new Buffer(one, "base64"));
+        //console.log('message sent');
       }
     }
-  }, 50);
-
-  wsSrc.on('error', function(error) { console.log(error); setTimeout(wsStart(), 5000); });
-
-}
+  }
+}, 50);
 
 wsStart();
 
