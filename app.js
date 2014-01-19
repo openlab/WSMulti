@@ -60,7 +60,7 @@ function wsStart(){
 
     });
 
-    //wsSrc.on('error', function(error) { console.log(error); setTimeout(wsStart(), 5000); });
+    wsSrc.on('error', function(error) { console.log(error); setTimeout(wsStart(), 5000); });
 }
 
 wsStart();
