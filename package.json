@@ -4,12 +4,11 @@
   "description": "A nodejs application to multiplex a binary WebSocket using base64 arrays",
   "main": "app.js",
   "author": {
-    "name": "bureado",
+    "name": "@bureado @Nik_G @SyntaxC4",
     "email": ""
   },
   "dependencies": {
 	"ws": "*",
-	"express": "*",
-	"azure": "*"
+	"express": "*"
   }
 }

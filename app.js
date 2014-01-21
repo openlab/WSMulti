@@ -1,5 +1,4 @@
 var config = require('./config');
-var azure = require('azure');
 var util = require('util');
 var WebSocket = require('ws');
 var WebSocketServer = require('ws').Server;
@@ -20,7 +19,7 @@ connectionIDCounter = 0;
 var wsSrc;
 var wsDst = new WebSocketServer({server: server});
 
-wsDst.broadcast = function(data) {
+wsDst.broadcast = function(data) {  // broadcast data to all connnections
 	for(var key in allSocks) {
 		if(allSocks[key].readyState == 1) {
 			allSocks[key].send(new Buffer(data, "base64"));
@@ -28,7 +27,7 @@ wsDst.broadcast = function(data) {
 	}
 };
 
-wsDst.on('connection', function(ws) {
+wsDst.on('connection', function(ws) {  // on connecting 
 
   ws.id = connectionIDCounter;  // set ID to counter
   ws.IP = ws._socket.remoteAddress + ':' + ws._socket.remotePort;
@@ -42,36 +41,36 @@ wsDst.on('connection', function(ws) {
     // Remove disconnected client from the array.
     delete allSocks[ws.id];
     printClientStatus(ws, 'Disconnected');
-	printClientCount();
+	  printClientCount();
   });
 
   ws.on('error', function(error) { 
-	console.log(error); 
+	 console.log(error); 
   });
 
 });
 
-function wsStart(){
+function wsStart(){  // put the source websocket logic in a function for easy reconnect
 
   wsSrc = new WebSocket(config.sourceSocket);
   wsSrc.on('open', function() {
-      printSourceStatus('Connected');
+    printSourceStatus('Connected');
   });
 
   wsSrc.on('message', function(data, flags) {
     var message = new Buffer(data).toString('base64');
-	wsDst.broadcast(message);
+  	wsDst.broadcast(message);
   });
 
   wsSrc.on('close', function(ws) {
-	printSourceStatus('Disconnected');
+	  printSourceStatus('Disconnected');
     // try to reconnect
     setTimeout(wsStart(), 5000);
   });
 
   wsSrc.on('error', function(error) { 
-	console.log(error); 
-	setTimeout(wsStart(), 5000); 
+  	console.log(error); 
+  	setTimeout(wsStart(), 5000); 
   });
 }
 
@@ -97,10 +96,11 @@ function printSourceStatus(status) {
 	console.log(new Date() + ' ' + status + ' from: ' + config.sourceSocket);
 }
 
+// prototype to return size of associative array
 Object.size = function(obj) {
-    var size = 0, key;
-    for (key in obj) {
-        if (obj.hasOwnProperty(key)) size++;
-    }
-    return size;
+  var size = 0, key;
+  for (key in obj) {
+      if (obj.hasOwnProperty(key)) size++;
+  }
+  return size;
 };
