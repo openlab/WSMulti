@@ -49,14 +49,16 @@ wsDst.on('connection', function(ws) {
   connectionIDCounter++; // increment counter
   //var index = allSocks.push(ws) - 1;
   console.log(new Date() + " Client Connected id: " + ws.id + " IP: " + ws.IP);
-  console.log('Total Clients: ' + Object.size(allSocks));
+  console.log('Total Connected Clients: ' + Object.size(allSocks));
+  console.log('Total Clients (lifetime): ' + connectionIDCounter);
 
   ws.on('close', function() {
     console.log(new Date() + ' Client Disconnected id: ' + ws.id + ' IP: '+ ws.IP);
     delete allSocks[ws.id];
     //allSocks.splice(index,1);   // oddly, SPLICE doesn't seem to work
     //allSocks.splice(allSocks.indexOf(x),1);
-    console.log('Total Clients: ' + Object.size(allSocks));
+    console.log('Total Connected Clients: ' + Object.size(allSocks));
+    console.log('Total Clients (lifetime): ' + connectionIDCounter);
   });
 
   ws.on('error', function(error) { console.log(error); });
