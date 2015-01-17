@@ -21,7 +21,8 @@ var wsDst = new WebSocketServer({server: server});
 wsDst.broadcast = function(data) {  // broadcast data to all connnections
 	for(var key in allSocks) {
 		if(allSocks[key].readyState == 1) {
-			allSocks[key].send(new Buffer(data, "base64"));
+			// allSocks[key].send(new Buffer(data, "base64"));
+      allSocks[key].send(data);
 		}
 	}
 };
@@ -57,8 +58,9 @@ function wsStart(){  // put the source websocket logic in a function for easy re
   });
 
   wsSrc.on('message', function(data, flags) {
-    var message = new Buffer(data).toString('base64');
-  	wsDst.broadcast(message);
+    //var message = new Buffer(data).toString('base64');
+  	//wsDst.broadcast(message);
+    wsDst.broadcast(data);
   });
 
   wsSrc.on('close', function(ws) {
