@@ -32,7 +32,7 @@ wsDst.broadcast = function(data) {  // broadcast data to all connnections
 wsDst.on('connection', function(ws) {  // on connecting 
   //start new connections with a full buffer
    for(var i=0; i < buffer.length; i++){
-     wsDst.send(buffer[i]);
+     ws.send(buffer[i]);
     }
   ws.id = connectionIDCounter;  // set ID to counter
   ws.IP = ws._socket.remoteAddress + ':' + ws._socket.remotePort;
