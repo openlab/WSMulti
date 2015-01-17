@@ -9,6 +9,8 @@ app.use(express.static(__dirname + '/public'));
 var server = http.createServer(app);
 var clientport = process.env.PORT || 8080;
 server.listen(clientport);
+var buffMax = 1000;
+var buffer =[];
 
 console.log('Started serving on port: ' + clientport);
 
@@ -28,7 +30,10 @@ wsDst.broadcast = function(data) {  // broadcast data to all connnections
 };
 
 wsDst.on('connection', function(ws) {  // on connecting 
-
+  //start new connections with a full buffer
+   for(var i=0; i < buffer.length; i++){
+     wsDst.send(buffer[i]);
+    }
   ws.id = connectionIDCounter;  // set ID to counter
   ws.IP = ws._socket.remoteAddress + ':' + ws._socket.remotePort;
   allSocks[connectionIDCounter] = ws; // store socket in array object
@@ -61,6 +66,8 @@ function wsStart(){  // put the source websocket logic in a function for easy re
     //var message = new Buffer(data).toString('base64');
   	//wsDst.broadcast(message);
     wsDst.broadcast(data);
+    updateBuffer(data);
+    
   });
 
   wsSrc.on('close', function(ws) {
@@ -105,3 +112,25 @@ Object.size = function(obj) {
   }
   return size;
 };
+
+//simple buffer treated as queue.
+//this queue shift is really O(n) but
+//since this is such a small array it shouldn't matter
+function updateBuffer(msg){
+  var packetFound=false;
+  //check for dupes. Only need to look at the tail end of buffer
+  for(var i=buffer.length -6; i< buffer.length; i++){
+    if(msg == buffer[i]){
+      packetFound=true;
+      break;
+    }
+  }
+  if(!packetFound){
+    buffer.push(msg);
+  }
+  while(buffer.length > buffMax ){
+    buffer.shift();
+  }
+  
+  // console.log(buffer);
+}
